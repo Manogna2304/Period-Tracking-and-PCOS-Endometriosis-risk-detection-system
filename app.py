@@ -310,16 +310,25 @@ if page == "🏠 Home":
             fig.add_vline(x=0, line_color="#7b1fa2", line_dash="dot", annotation_text="Today")
 
             fig.update_layout(
-                height=260,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                showlegend=True,
-                legend=dict(orientation="h", y=-0.2),
-                margin=dict(l=10, r=10, t=10, b=10),
-                barmode="overlay",
-                xaxis=dict(visible=False),
-                font=dict(family="DM Sans"),
-            )
+    height=260,
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    showlegend=True,
+    legend=dict(
+        orientation="h",
+        y=-0.2,
+        font=dict(color="#3d1a47", family="DM Sans")
+    ),
+    margin=dict(l=10, r=10, t=10, b=10),
+    barmode="overlay",
+    xaxis=dict(visible=False),
+    yaxis=dict(
+        tickfont=dict(color="#3d1a47", family="DM Sans"),
+        gridcolor="rgba(180,100,200,0.1)",
+    ),
+    font=dict(family="DM Sans", color="#3d1a47"),
+)
+            
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f"""

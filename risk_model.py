@@ -81,7 +81,6 @@ class HealthRiskModel:
         model.fit(X_scaled, y)
 
     def _train_pcos_fallback(self):
-
         np.random.seed(42)
 
         X = pd.DataFrame({
@@ -111,7 +110,6 @@ class HealthRiskModel:
         self.pcos_model.fit(X_scaled, y)
 
     def _train_endo_fallback(self):
-
         np.random.seed(43)
 
         X = pd.DataFrame({

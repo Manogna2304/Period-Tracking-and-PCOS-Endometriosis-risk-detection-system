@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from utils.feature_engineering import prepare_symptom_features
+from feature_engineering import prepare_symptom_features
 
 
 CLUSTER_PROFILES = {

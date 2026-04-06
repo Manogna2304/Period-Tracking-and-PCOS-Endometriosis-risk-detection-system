@@ -88,12 +88,12 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
 .risk-high   { background: #ffebee; color: #b71c1c !important; border: 2px solid #ef5350; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; margin-bottom: 10px; }
 
 /* Cluster pill */
-.cluster-pill { display: inline-block; border-radius: 50px; padding: 0.35rem 1rem; font-size: 0.9rem; font-weight: 600; color: white !important; margin: 0.2rem; }
+.cluster-pill { display: inline-block; border-radius: 50px; padding: 0.35rem 1rem; font-size: 0.9rem; font-weight: 600; color: #3d1a47 !important; margin: 0.2rem; }
 
 /* Buttons */
 .stButton > button {
-    background: linear-gradient(135deg, #7b1fa2, #c2185b) !important;
-    color: white !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important;
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec) !important;
+    color: #3d1a47 !important; border: 2px solid rgba(180,100,200,0.4) !important; border-radius: 12px !important; font-weight: 600 !important;
     padding: 0.6rem 2rem !important; transition: all 0.2s ease !important;
 }
 

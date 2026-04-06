@@ -86,6 +86,43 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     margin: 0.2rem;
 }
 
+/* Table text visibility */
+.luna-card table td, .luna-card table th {
+    color: #3d1a47 !important;
+    font-weight: 500;
+}
+
+/* Checkbox and widget labels */
+.stCheckbox label, 
+[data-testid="stCheckbox"] label p {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Slider labels */
+.stSlider label, 
+[data-testid="stSlider"] label {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* General form label visibility */
+[data-testid="stWidgetLabel"] p,
+.stSelectSlider label,
+label[data-testid] {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Subtitle / italic markdown text */
+p em, .stMarkdown p em {
+    color: #6b2d6b !important;
+    font-style: italic;
+    font-weight: 400;
+}
+
+
+
 /* Buttons */
 .stButton > button {
     background: linear-gradient(135deg, #7b1fa2, #c2185b) !important;

@@ -9,10 +9,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from models.cycle_predictor import CyclePredictor
-from models.risk_model import PCOSRiskModel
-from models.symptom_cluster import SymptomClusterer, CLUSTER_PROFILES
-
+from cycle_predictor import CyclePredictor
+from risk_model import PCOSRiskModel
+from symptom_cluster import SymptomClusterer, CLUSTER_PROFILES
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Luna · Period Tracker",

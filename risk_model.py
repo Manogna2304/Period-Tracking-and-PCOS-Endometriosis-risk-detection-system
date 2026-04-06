@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import make_classification
-from utils.feature_engineering import prepare_pcos_features
+from feature_engineering import prepare_pcos_features
 
 
 class PCOSRiskModel:

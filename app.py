@@ -391,8 +391,26 @@ elif page == "🔬 Health Risk Check":
 
         st.markdown("**Basic Info**")
         age = st.number_input("Age", 16, 50, 24)
-        bmi = st.number_input("BMI", 14.0, 50.0, 22.5, step=0.1)
-        cycle_len = st.number_input("Average Cycle Length (days)", 15, 60, 28)
+
+        # Weight + Height instead of BMI
+        w_col, h_col = st.columns(2)
+        with w_col:
+            weight_kg = st.number_input("Weight (kg)", 30.0, 150.0, 60.0, step=0.5)
+        with h_col:
+            height_cm = st.number_input("Height (cm)", 130.0, 210.0, 160.0, step=0.5)
+        bmi_calc = round(weight_kg / ((height_cm / 100) ** 2), 1)
+        st.caption(f"📊 Calculated BMI: **{bmi_calc}**")
+
+        # Pull cycle length from predictor if available
+        predictor = st.session_state.predictor
+        dates = st.session_state.period_dates
+        if len(dates) >= 2:
+            pred_result = predictor.predict_next(dates)
+            auto_cycle = pred_result.get("avg_cycle", 28)
+            st.caption(f"📅 Using average cycle length from your logs: **{auto_cycle} days**")
+            cycle_len = auto_cycle
+        else:
+            cycle_len = st.number_input("Average Cycle Length (days)", 15, 60, 28)
 
         st.markdown("**Symptoms** *(check all that apply)*")
         col_s1, col_s2 = st.columns(2)
@@ -403,16 +421,22 @@ elif page == "🔬 Health Risk Check":
             pimples     = st.checkbox("Persistent acne")
             pelvic_pain = st.checkbox("Chronic pelvic pain")
         with col_s2:
-            heavy_bleed = st.checkbox("Heavy menstrual bleeding")
+            heavy_bleed      = st.checkbox("Heavy menstrual bleeding")
             pain_intercourse = st.checkbox("Pain during intercourse")
-            skin_dark = st.checkbox("Skin darkening")
-            hair_loss   = st.checkbox("Hair loss / thinning")
-            fast_food = st.checkbox("High fast food intake")
+            skin_dark        = st.checkbox("Skin darkening")
+            hair_loss        = st.checkbox("Hair loss / thinning")
+            fast_food        = st.checkbox("High fast food intake")
 
-        st.markdown("**Lifestyle & History**")
-        family_history = st.checkbox("Family history of Endometriosis/PCOS")
+        st.markdown("**Family History**")
+        fh_col1, fh_col2 = st.columns(2)
+        with fh_col1:
+            family_history_pcos = st.checkbox("Family history of PCOS")
+        with fh_col2:
+            family_history_endo = st.checkbox("Family history of Endometriosis")
+
+        st.markdown("**Lifestyle**")
         exercise = st.slider("Exercise days per week", 0, 7, 3)
-        sleep = st.slider("Average sleep (hours/night)", 3, 12, 7)
+        sleep    = st.slider("Average sleep (hours/night)", 3, 12, 7)
 
         analyze = st.button("🔬 Analyze Risk")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -420,41 +444,95 @@ elif page == "🔬 Health Risk Check":
     with col_output:
         if analyze:
             user_input = {
-                "age": age, "bmi": bmi, "cycle_length": cycle_len,
+                "age": age,
+                "weight_kg": weight_kg, "height_cm": height_cm,
+                "cycle_length": cycle_len,
                 "cycle_irregular": cycle_irreg, "weight_gain": weight_gain,
                 "hair_growth": hair_growth, "skin_darkening": skin_dark,
                 "hair_loss": hair_loss, "pimples": pimples, "fast_food": fast_food,
-                "pelvic_pain": pelvic_pain, "heavy_bleeding": heavy_bleed, 
-                "pain_intercourse": pain_intercourse, "family_history": family_history,
-                "exercise": exercise, "sleep_hours": sleep
+                "pelvic_pain": pelvic_pain, "heavy_bleeding": heavy_bleed,
+                "pain_intercourse": pain_intercourse,
+                "family_history_pcos": family_history_pcos,
+                "family_history_endo": family_history_endo,
+                "exercise": exercise, "sleep_hours": sleep,
             }
             results = st.session_state.risk_model.predict_risk(user_input)
 
             st.markdown("### Assessment Result")
-            
-            # Display PCOS
+
             pcos = results["PCOS"]
-            st.markdown(f'<div class="risk-{pcos["risk_level"].lower()}">⬤ PCOS: {pcos["risk_level"]} Risk ({pcos["probability"]}%)</div>', unsafe_allow_html=True)
-            
-            # Display Endo
             endo = results["Endometriosis"]
-            st.markdown(f'<div class="risk-{endo["risk_level"].lower()}">⬤ Endometriosis: {endo["risk_level"]} Risk ({endo["probability"]}%)</div>', unsafe_allow_html=True)
-            
+
+            # Risk badges
+            st.markdown(f'<div class="risk-{pcos["risk_level"].lower()}">⬤ PCOS: {pcos["risk_level"]} Risk &nbsp;({pcos["probability"]}%)</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="risk-{endo["risk_level"].lower()}">⬤ Endometriosis: {endo["risk_level"]} Risk &nbsp;({endo["probability"]}%)</div>', unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # Dual gauge chart styled to match app palette
+            fig = go.Figure()
+            fig.add_trace(go.Indicator(
+                mode="gauge+number",
+                value=pcos["probability"],
+                number={"suffix": "%", "font": {"size": 30, "family": "DM Serif Display", "color": "#3d1a47"}},
+                title={"text": "PCOS Risk", "font": {"family": "DM Serif Display", "size": 15, "color": "#6b2d6b"}},
+                gauge={
+                    "axis": {"range": [0, 100], "tickfont": {"color": "#3d1a47"}},
+                    "bar": {"color": "#c2185b" if pcos["probability"] >= 65 else "#f39c12" if pcos["probability"] >= 35 else "#66bb6a"},
+                    "steps": [
+                        {"range": [0, 35],  "color": "#f3e5f5"},
+                        {"range": [35, 65], "color": "#fce4ec"},
+                        {"range": [65, 100],"color": "#f8bbd0"},
+                    ],
+                    "threshold": {"line": {"color": "#3d1a47", "width": 2}, "value": pcos["probability"]},
+                },
+                domain={"x": [0, 0.45], "y": [0, 1]},
+            ))
+            fig.add_trace(go.Indicator(
+                mode="gauge+number",
+                value=endo["probability"],
+                number={"suffix": "%", "font": {"size": 30, "family": "DM Serif Display", "color": "#3d1a47"}},
+                title={"text": "Endometriosis Risk", "font": {"family": "DM Serif Display", "size": 15, "color": "#6b2d6b"}},
+                gauge={
+                    "axis": {"range": [0, 100], "tickfont": {"color": "#3d1a47"}},
+                    "bar": {"color": "#7b1fa2" if endo["probability"] >= 65 else "#ce93d8" if endo["probability"] >= 35 else "#ba68c8"},
+                    "steps": [
+                        {"range": [0, 35],  "color": "#f3e5f5"},
+                        {"range": [35, 65], "color": "#e1bee7"},
+                        {"range": [65, 100],"color": "#ce93d8"},
+                    ],
+                    "threshold": {"line": {"color": "#3d1a47", "width": 2}, "value": endo["probability"]},
+                },
+                domain={"x": [0.55, 1], "y": [0, 1]},
+            ))
+            fig.update_layout(
+                height=260,
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="DM Sans", color="#3d1a47"),
+                margin=dict(l=10, r=10, t=30, b=10),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+            # BMI info card
             st.markdown('<div class="luna-card">', unsafe_allow_html=True)
-            st.markdown("#### Recommendations")
+            bmi_label = "Underweight" if bmi_calc < 18.5 else "Normal" if bmi_calc < 25 else "Overweight" if bmi_calc < 30 else "Obese"
+            st.markdown(f"**Body Stats —** {weight_kg} kg · {height_cm} cm · BMI {bmi_calc} ({bmi_label})")
+            st.markdown("---")
             st.markdown(f"**PCOS:** {pcos['advice']}")
             st.markdown(f"**Endometriosis:** {endo['advice']}")
             st.markdown('</div>', unsafe_allow_html=True)
+
         else:
             st.markdown('<div class="luna-card">', unsafe_allow_html=True)
             st.markdown("""
 ### What this model does
 
-It runs two parallel **Logistic Regression** models connected to Kaggle data structures to assess:
-1. **PCOS Risk:** Based on clinical markers (BMI, cycle length) and symptoms (hair growth, acne, skin darkening).
-2. **Endometriosis Risk:** Based on specific pain profiles (pelvic pain, dysmenorrhea), heavy bleeding, and family history.
+It runs two parallel **Logistic Regression** models to assess:
 
-*The models dynamically load `pcos_dataset.csv` and `endo_dataset.csv` if placed in the directory, falling back seamlessly if unavailable.*
+1. **PCOS Risk:** Based on clinical markers (BMI auto-calculated from weight & height, cycle length auto-filled from your logs) and symptoms (hair growth, acne, skin darkening, family history of PCOS).
+2. **Endometriosis Risk:** Based on specific pain profiles (pelvic pain, dysmenorrhea), heavy bleeding, and family history of Endometriosis separately.
+
+*Cycle length is automatically pulled from your logged period dates. BMI is calculated from your entered weight and height.*
             """)
             st.markdown('</div>', unsafe_allow_html=True)
 

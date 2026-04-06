@@ -17,11 +17,31 @@ def prepare_cycle_features(cycle_lengths: list) -> pd.DataFrame:
     df = df.dropna()
     return df
 
+def compute_bmi(weight_kg: float, height_cm: float) -> float:
+    """Calculate BMI from weight (kg) and height (cm)."""
+    if height_cm <= 0:
+        return 22.0
+    height_m = height_cm / 100.0
+    return round(weight_kg / (height_m ** 2), 1)
+
 def prepare_health_features(user_input: dict) -> pd.DataFrame:
-    """Convert user input dict into a feature vector for dual models."""
+    """Convert user input dict into a feature vector for dual models.
+    Accepts weight_kg + height_cm and computes BMI internally.
+    Supports separate family_history_pcos and family_history_endo fields.
+    """
+    # Compute BMI from weight/height if provided, else fall back to bmi key
+    if "weight_kg" in user_input and "height_cm" in user_input:
+        bmi = compute_bmi(user_input["weight_kg"], user_input["height_cm"])
+    else:
+        bmi = user_input.get("bmi", 22.0)
+
+    # family_history is used as a shared field; prefer specific ones if available
+    family_history_pcos = int(user_input.get("family_history_pcos", user_input.get("family_history", False)))
+    family_history_endo = int(user_input.get("family_history_endo", user_input.get("family_history", False)))
+
     features = {
         "age": user_input.get("age", 25),
-        "bmi": user_input.get("bmi", 22),
+        "bmi": bmi,
         "cycle_length": user_input.get("cycle_length", 28),
         "cycle_irregular": int(user_input.get("cycle_irregular", False)),
         "weight_gain": int(user_input.get("weight_gain", False)),
@@ -33,7 +53,8 @@ def prepare_health_features(user_input: dict) -> pd.DataFrame:
         "pelvic_pain": int(user_input.get("pelvic_pain", False)),
         "heavy_bleeding": int(user_input.get("heavy_bleeding", False)),
         "pain_intercourse": int(user_input.get("pain_intercourse", False)),
-        "family_history": int(user_input.get("family_history", False)),
+        "family_history": family_history_pcos,        # used by PCOS model
+        "family_history_endo": family_history_endo,   # used by Endo model
         "exercise": user_input.get("exercise", 3),
         "sleep_hours": user_input.get("sleep_hours", 7),
     }

@@ -27,7 +27,7 @@ class HealthRiskModel:
         self.endo_scaler = StandardScaler()
         self.endo_features = [
             "age", "bmi", "cycle_length", "pelvic_pain", "heavy_bleeding",
-            "pain_intercourse", "family_history", "cycle_irregular", "exercise"
+            "pain_intercourse", "family_history_endo", "cycle_irregular", "exercise"
         ]
         
         self._initialize_models()

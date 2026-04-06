@@ -315,9 +315,10 @@ elif page == "📅 Cycle Prediction":
             new_dates = pd.to_datetime(edited_df["Period Start Date"]).dt.date.dropna().tolist()
             st.session_state.period_dates = sorted(new_dates)
             st.session_state.predictor = CyclePredictor()
+            st.markdown('</div>', unsafe_allow_html=True)
             st.rerun()
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            
 
     with col_result:
         dates = st.session_state.period_dates
@@ -336,10 +337,12 @@ elif page == "📅 Cycle Prediction":
                     <div class="label">Predicted Cycle Length</div>
                 </div>""", unsafe_allow_html=True)
             with c2:
-                st.markdown(f"""<div class="metric-card">
-                    <div class="value">{next_date.strftime('%d %b')}</div>
-                    <div class="label">Expected Next Period</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(f"""
+<div class="metric-card">
+    <div class="value">{result['predicted_length']} days</div>
+    <div class="label">Predicted Cycle Length</div>
+</div>
+""", unsafe_allow_html=True)
 
             st.markdown("<br>", unsafe_allow_html=True)
 

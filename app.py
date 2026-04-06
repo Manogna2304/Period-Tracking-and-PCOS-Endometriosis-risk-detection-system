@@ -322,7 +322,7 @@ if page == "🏠 Home":
             )
             st.plotly_chart(fig, use_container_width=True)
 
-           st.markdown(f"""
+            st.markdown(f"""
 <table style="width:100%; color:#3d1a47; font-size:0.95rem;">
   <tr><td>🔴 <b>Last period started</b></td><td style="color:#6b2d6b; font-weight:600;">{st.session_state.last_period_date.strftime('%d %b %Y')}</td></tr>
   <tr><td>🔮 <b>Next period predicted</b></td><td style="color:#6b2d6b; font-weight:600;">{next_period.strftime('%d %b %Y')}</td></tr>

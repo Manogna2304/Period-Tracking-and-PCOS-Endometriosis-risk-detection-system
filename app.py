@@ -41,13 +41,13 @@ html, body, [class*="css"] {
     background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #f3e5f5 100%);
 }
 
-/* Sidebar - Lightened to support dark text */
+/* Sidebar */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #fdf6f0 0%, #f3e5f5 100%);
-    border-right: 1px solid rgba(180,100,200,0.2);
+    background: linear-gradient(180deg, #3d1a47 0%, #6b2d6b 100%);
+    border-right: none;
 }
-[data-testid="stSidebar"] * { color: #3d1a47 !important; }
-[data-testid="stSidebar"] .stRadio label { color: #3d1a47 !important; font-size: 1rem; }
+[data-testid="stSidebar"] * { color: #e0c3fc !important; }
+[data-testid="stSidebar"] .stRadio label { color: #e0c3fc !important; font-size: 1rem; }
 
 /* Headers */
 h1 { font-family: 'DM Serif Display', serif !important; color: #3d1a47 !important; font-size: 2.6rem !important; margin-top: -20px; }
@@ -69,15 +69,15 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     color: #3d1a47 !important;
 }
 
-/* Metric cards - Lightened backgrounds with dark text */
+/* Metric cards */
 .metric-card {
-    background: rgba(255,255,255,0.6);
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
     border-radius: 16px;
     padding: 1.2rem 1.5rem;
     color: #3d1a47;
     text-align: center;
-    border: 1px solid rgba(180,100,200,0.3);
-    box-shadow: 0 4px 15px rgba(109,45,107,0.05);
+    box-shadow: 0 6px 20px rgba(123,31,162,0.3);
+    border: 1px solid rgba(180,100,200,0.25);
 }
 .metric-card .value { font-size: 2.4rem; font-weight: 700; font-family: 'DM Serif Display', serif; color: #3d1a47 !important; }
 .metric-card .label { font-size: 0.85rem; opacity: 0.85; letter-spacing: 0.05em; text-transform: uppercase; color: #6b2d6b !important; }
@@ -87,22 +87,14 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
 .risk-moderate { background: #fff8e1; color: #e65100 !important; border: 2px solid #ffa726; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; margin-bottom: 10px; }
 .risk-high   { background: #ffebee; color: #b71c1c !important; border: 2px solid #ef5350; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; margin-bottom: 10px; }
 
-/* Cluster pill - Dark text */
-.cluster-pill { display: inline-block; border-radius: 50px; padding: 0.35rem 1rem; font-size: 0.9rem; font-weight: 600; color: #3d1a47 !important; margin: 0.2rem; border: 1px solid rgba(0,0,0,0.1); }
+/* Cluster pill */
+.cluster-pill { display: inline-block; border-radius: 50px; padding: 0.35rem 1rem; font-size: 0.9rem; font-weight: 600; color: white !important; margin: 0.2rem; }
 
-/* Buttons - Lightened background to support dark text */
+/* Buttons */
 .stButton > button {
-    background: rgba(255,255,255,0.8) !important;
-    color: #3d1a47 !important; 
-    border: 1px solid #7b1fa2 !important; 
-    border-radius: 12px !important; 
-    font-weight: 600 !important;
-    padding: 0.6rem 2rem !important; 
-    transition: all 0.2s ease !important;
-}
-.stButton > button:hover {
-    background: rgba(123,31,162,0.1) !important;
-    border-color: #c2185b !important;
+    background: linear-gradient(135deg, #7b1fa2, #c2185b) !important;
+    color: white !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important;
+    padding: 0.6rem 2rem !important; transition: all 0.2s ease !important;
 }
 
 /* Hide streamlit branding and white header bars */
@@ -503,7 +495,7 @@ elif page == "🌸 Symptom Patterns":
                     pct = round(count / total * 100)
                     st.markdown(f"""
 <div style="margin: 0.5rem 0;">
-  <span class="cluster-pill" style="background:{profile['color']}40">{profile['emoji']} {name}</span>
+  <span class="cluster-pill" style="background:{profile['color']}">{profile['emoji']} {name}</span>
   <span style="font-size:0.9rem; color:#3d1a47;"> {count} day(s) · {pct}%</span>
 </div>
 """, unsafe_allow_html=True)

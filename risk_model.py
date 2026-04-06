@@ -10,15 +10,9 @@ from feature_engineering import prepare_health_features
 
 
 class HealthRiskModel:
-    """
-    Dual calibrated ML model for PCOS and Endometriosis risk detection.
-    Uses:
-    - Logistic Regression + Calibration
-    - Feature interactions
-    - Domain-aware fallback data
-    """
 
     def __init__(self):
+
         # ───── PCOS MODEL ─────
         self.pcos_model = CalibratedClassifierCV(
             LogisticRegression(max_iter=1000),
@@ -51,9 +45,9 @@ class HealthRiskModel:
 
         self._initialize_models()
 
-    # ───────────────────────────────────────────────
+    # ─────────────────────────────
     # INITIALIZATION
-    # ───────────────────────────────────────────────
+    # ─────────────────────────────
     def _initialize_models(self):
 
         if os.path.exists("pcos_dataset.csv"):
@@ -78,12 +72,13 @@ class HealthRiskModel:
         else:
             self._train_endo_fallback()
 
-    # ───────────────────────────────────────────────
+    # ─────────────────────────────
     # TRAIN FROM CSV
-    # ───────────────────────────────────────────────
+    # ─────────────────────────────
     def _train_from_csv(self, path, model, scaler, feature_cols, label_col):
 
         df = pd.read_csv(path)
+
         if label_col not in df.columns:
             return
 
@@ -97,7 +92,7 @@ class HealthRiskModel:
 
         X = X[feature_cols]
 
-        # ─── FEATURE INTERACTIONS ───
+        # Feature interactions
         if "cycle_irregular" in X.columns and "hormonal_score" in X.columns:
             X["pcos_interaction"] = X["cycle_irregular"] * X["hormonal_score"]
 
@@ -109,101 +104,111 @@ class HealthRiskModel:
         X_scaled = scaler.fit_transform(X)
         model.fit(X_scaled, y)
 
-    # ───────────────────────────────────────────────
-    # FALLBACK MODELS
-    # ───────────────────────────────────────────────
+    # ─────────────────────────────
+    # FALLBACK PCOS
+    # ─────────────────────────────
     def _train_pcos_fallback(self):
-    np.random.seed(42)
 
-    X = pd.DataFrame({
-        "cycle_irregular": np.random.binomial(1, 0.4, 500),
-        "weight_gain": np.random.binomial(1, 0.5, 500),
-        "hair_growth": np.random.binomial(1, 0.4, 500),
-        "pimples": np.random.binomial(1, 0.5, 500),
-        "skin_darkening": np.random.binomial(1, 0.3, 500),
-        "hair_loss": np.random.binomial(1, 0.3, 500),
-        "fast_food": np.random.binomial(1, 0.5, 500),
-        "exercise": np.random.randint(0, 7, 500),
-        "sleep_hours": np.random.randint(4, 9, 500),
-        "cycle_length": np.random.randint(24, 40, 500),
-        "age": np.random.randint(16, 40, 500),
-        "bmi": np.random.normal(25, 4, 500),
-    })
+        np.random.seed(42)
 
-    X["cycle_variability"] = abs(X["cycle_length"] - 28)
-    X["hormonal_score"] = X["hair_growth"] + X["pimples"] + X["hair_loss"] + X["skin_darkening"]
-    X["lifestyle_risk"] = X["fast_food"] + (X["exercise"] < 2) + (X["sleep_hours"] < 6)
+        X = pd.DataFrame({
+            "cycle_irregular": np.random.binomial(1, 0.4, 500),
+            "weight_gain": np.random.binomial(1, 0.5, 500),
+            "hair_growth": np.random.binomial(1, 0.4, 500),
+            "pimples": np.random.binomial(1, 0.5, 500),
+            "skin_darkening": np.random.binomial(1, 0.3, 500),
+            "hair_loss": np.random.binomial(1, 0.3, 500),
+            "fast_food": np.random.binomial(1, 0.5, 500),
+            "exercise": np.random.randint(0, 7, 500),
+            "sleep_hours": np.random.randint(4, 9, 500),
+            "cycle_length": np.random.randint(24, 40, 500),
+            "age": np.random.randint(16, 40, 500),
+            "bmi": np.random.normal(25, 4, 500),
+        })
 
-    score = (
-        0.4 * X["cycle_irregular"] +
-        0.3 * X["weight_gain"] +
-        0.4 * X["hormonal_score"] +
-        0.2 * (X["bmi"] > 25)
-    )
+        # Derived features
+        X["cycle_variability"] = abs(X["cycle_length"] - 28)
+        X["hormonal_score"] = (
+            X["hair_growth"] + X["pimples"] +
+            X["hair_loss"] + X["skin_darkening"]
+        )
+        X["lifestyle_risk"] = (
+            X["fast_food"] +
+            (X["exercise"] < 2) +
+            (X["sleep_hours"] < 6)
+        )
 
-    y = (score > 1.2).astype(int)
+        score = (
+            0.4 * X["cycle_irregular"] +
+            0.3 * X["weight_gain"] +
+            0.4 * X["hormonal_score"] +
+            0.2 * (X["bmi"] > 25)
+        )
 
-    X = X[self.pcos_features]
+        y = (score > 1.2).astype(int)
 
-    X_scaled = self.pcos_scaler.fit_transform(X)
-    self.pcos_model.fit(X_scaled, y)
+        X = X[self.pcos_features]
 
-   def _train_endo_fallback(self):
-    np.random.seed(43)
+        X_scaled = self.pcos_scaler.fit_transform(X)
+        self.pcos_model.fit(X_scaled, y)
 
-    X = pd.DataFrame({
-        "pelvic_pain": np.random.binomial(1, 0.5, 500),
-        "heavy_bleeding": np.random.binomial(1, 0.4, 500),
-        "pain_intercourse": np.random.binomial(1, 0.3, 500),
-        "cycle_irregular": np.random.binomial(1, 0.3, 500),
-        "exercise": np.random.randint(0, 7, 500),
-        "age": np.random.randint(16, 40, 500),
-        "bmi": np.random.normal(24, 4, 500),
-    })
+    # ─────────────────────────────
+    # FALLBACK ENDO
+    # ─────────────────────────────
+    def _train_endo_fallback(self):
 
-    X["pain_score"] = (
-        X["pelvic_pain"] +
-        X["pain_intercourse"] +
-        X["heavy_bleeding"]
-    )
+        np.random.seed(43)
 
-    score = (
-        0.6 * X["pain_score"] +
-        0.2 * X["cycle_irregular"]
-    )
+        X = pd.DataFrame({
+            "pelvic_pain": np.random.binomial(1, 0.5, 500),
+            "heavy_bleeding": np.random.binomial(1, 0.4, 500),
+            "pain_intercourse": np.random.binomial(1, 0.3, 500),
+            "cycle_irregular": np.random.binomial(1, 0.3, 500),
+            "exercise": np.random.randint(0, 7, 500),
+            "age": np.random.randint(16, 40, 500),
+            "bmi": np.random.normal(24, 4, 500),
+        })
 
-    y = (score > 1.0).astype(int)
+        X["pain_score"] = (
+            X["pelvic_pain"] +
+            X["pain_intercourse"] +
+            X["heavy_bleeding"]
+        )
 
-    X = X[self.endo_features]
+        score = (
+            0.6 * X["pain_score"] +
+            0.2 * X["cycle_irregular"]
+        )
 
-    X_scaled = self.endo_scaler.fit_transform(X)
-    self.endo_model.fit(X_scaled, y)
+        y = (score > 1.0).astype(int)
 
-    # ───────────────────────────────────────────────
-    # RISK PREDICTION
-    # ───────────────────────────────────────────────
+        X = X[self.endo_features]
+
+        X_scaled = self.endo_scaler.fit_transform(X)
+        self.endo_model.fit(X_scaled, y)
+
+    # ─────────────────────────────
+    # PREDICTION
+    # ─────────────────────────────
     def predict_risk(self, user_input: dict) -> dict:
 
         X_full = prepare_health_features(user_input)
 
-        # ─── PCOS ───
+        # PCOS
         X_pcos = X_full[self.pcos_features]
         prob_pcos = self.pcos_model.predict_proba(
             self.pcos_scaler.transform(X_pcos)
         )[0][1]
 
-        # ─── ENDO ───
+        # ENDO
         X_endo = X_full[self.endo_features]
         prob_endo = self.endo_model.predict_proba(
             self.endo_scaler.transform(X_endo)
         )[0][1]
 
-        print(X_full.columns)
-        print("PCOS prob:", prob_pcos)
-        print("Endo prob:", prob_endo)
-
-        # ─── ADJUSTMENT ───
+        # Adjustment
         def adjust_probability(prob, features, condition):
+
             if condition == "PCOS":
                 prob += 0.02 * features["hormonal_score"]
                 prob += 0.01 * features["lifestyle_risk"]
@@ -218,19 +223,19 @@ class HealthRiskModel:
         prob_pcos = adjust_probability(prob_pcos, features, "PCOS")
         prob_endo = adjust_probability(prob_endo, features, "Endometriosis")
 
-        # ─── RISK LEVEL ───
+        # Risk level
         def format_risk(prob):
             if prob < 0.35:
                 return "Low", "Routine care advised."
             elif prob < 0.65:
-                return "Moderate", "Monitor symptoms and consider medical advice."
+                return "Moderate", "Monitor symptoms."
             else:
                 return "High", "Consult a medical professional."
 
         r_pcos, a_pcos = format_risk(prob_pcos)
         r_endo, a_endo = format_risk(prob_endo)
 
-        # ─── INTERPRETATION ───
+        # Interpretation
         if prob_pcos > 0.7 and prob_endo > 0.7:
             note = "Indicators of both PCOS and Endometriosis detected."
         elif prob_pcos > prob_endo:

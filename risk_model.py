@@ -113,62 +113,71 @@ class HealthRiskModel:
     # FALLBACK MODELS
     # ───────────────────────────────────────────────
     def _train_pcos_fallback(self):
-        np.random.seed(42)
+    np.random.seed(42)
 
-        X = pd.DataFrame({
-            "cycle_irregular": np.random.binomial(1, 0.4, 300),
-            "weight_gain": np.random.binomial(1, 0.5, 300),
-            "hair_growth": np.random.binomial(1, 0.4, 300),
-            "pimples": np.random.binomial(1, 0.5, 300),
-            "bmi": np.random.normal(26, 5, 300),
-        })
+    X = pd.DataFrame({
+        "cycle_irregular": np.random.binomial(1, 0.4, 500),
+        "weight_gain": np.random.binomial(1, 0.5, 500),
+        "hair_growth": np.random.binomial(1, 0.4, 500),
+        "pimples": np.random.binomial(1, 0.5, 500),
+        "skin_darkening": np.random.binomial(1, 0.3, 500),
+        "hair_loss": np.random.binomial(1, 0.3, 500),
+        "fast_food": np.random.binomial(1, 0.5, 500),
+        "exercise": np.random.randint(0, 7, 500),
+        "sleep_hours": np.random.randint(4, 9, 500),
+        "cycle_length": np.random.randint(24, 40, 500),
+        "age": np.random.randint(16, 40, 500),
+        "bmi": np.random.normal(25, 4, 500),
+    })
 
-        y = (
-            0.4 * X["cycle_irregular"] +
-            0.3 * X["weight_gain"] +
-            0.5 * X["hair_growth"] +
-            0.2 * (X["bmi"] > 25)
-        ) > 0.8
+    X["cycle_variability"] = abs(X["cycle_length"] - 28)
+    X["hormonal_score"] = X["hair_growth"] + X["pimples"] + X["hair_loss"] + X["skin_darkening"]
+    X["lifestyle_risk"] = X["fast_food"] + (X["exercise"] < 2) + (X["sleep_hours"] < 6)
 
-        y = y.astype(int)
+    score = (
+        0.4 * X["cycle_irregular"] +
+        0.3 * X["weight_gain"] +
+        0.4 * X["hormonal_score"] +
+        0.2 * (X["bmi"] > 25)
+    )
 
-        # Add missing features as 0
-        for col in self.pcos_features:
-            if col not in X.columns:
-                X[col] = 0
+    y = (score > 1.2).astype(int)
 
-        X = X[self.pcos_features]
+    X = X[self.pcos_features]
 
-        X_scaled = self.pcos_scaler.fit_transform(X)
-        self.pcos_model.fit(X_scaled, y)
+    X_scaled = self.pcos_scaler.fit_transform(X)
+    self.pcos_model.fit(X_scaled, y)
 
-    def _train_endo_fallback(self):
-        np.random.seed(43)
+   def _train_endo_fallback(self):
+    np.random.seed(43)
 
-        X = pd.DataFrame({
-            "pelvic_pain": np.random.binomial(1, 0.5, 300),
-            "heavy_bleeding": np.random.binomial(1, 0.4, 300),
-            "pain_intercourse": np.random.binomial(1, 0.3, 300),
-            "cycle_irregular": np.random.binomial(1, 0.3, 300),
-        })
+    X = pd.DataFrame({
+        "pelvic_pain": np.random.binomial(1, 0.5, 500),
+        "heavy_bleeding": np.random.binomial(1, 0.4, 500),
+        "pain_intercourse": np.random.binomial(1, 0.3, 500),
+        "cycle_irregular": np.random.binomial(1, 0.3, 500),
+        "exercise": np.random.randint(0, 7, 500),
+        "age": np.random.randint(16, 40, 500),
+        "bmi": np.random.normal(24, 4, 500),
+    })
 
-        y = (
-            0.6 * X["pelvic_pain"] +
-            0.5 * X["pain_intercourse"] +
-            0.4 * X["heavy_bleeding"]
-        ) > 0.7
+    X["pain_score"] = (
+        X["pelvic_pain"] +
+        X["pain_intercourse"] +
+        X["heavy_bleeding"]
+    )
 
-        y = y.astype(int)
+    score = (
+        0.6 * X["pain_score"] +
+        0.2 * X["cycle_irregular"]
+    )
 
-        # Add missing features
-        for col in self.endo_features:
-            if col not in X.columns:
-                X[col] = 0
+    y = (score > 1.0).astype(int)
 
-        X = X[self.endo_features]
+    X = X[self.endo_features]
 
-        X_scaled = self.endo_scaler.fit_transform(X)
-        self.endo_model.fit(X_scaled, y)
+    X_scaled = self.endo_scaler.fit_transform(X)
+    self.endo_model.fit(X_scaled, y)
 
     # ───────────────────────────────────────────────
     # RISK PREDICTION
@@ -189,16 +198,20 @@ class HealthRiskModel:
             self.endo_scaler.transform(X_endo)
         )[0][1]
 
+        print(X_full.columns)
+        print("PCOS prob:", prob_pcos)
+        print("Endo prob:", prob_endo)
+
         # ─── ADJUSTMENT ───
         def adjust_probability(prob, features, condition):
             if condition == "PCOS":
-                prob += 0.05 * features["hormonal_score"]
-                prob += 0.03 * features["lifestyle_risk"]
+                prob += 0.02 * features["hormonal_score"]
+                prob += 0.01 * features["lifestyle_risk"]
 
             if condition == "Endometriosis":
-                prob += 0.07 * features["pain_score"]
+                prob += 0.03 * features["pain_score"]
 
-            return min(prob, 0.95)
+            return max(0.05, min(prob, 0.95))
 
         features = X_full.iloc[0]
 

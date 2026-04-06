@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
-from utils.feature_engineering import prepare_cycle_features
+from feature_engineering import prepare_cycle_features
 
 
 class CyclePredictor:

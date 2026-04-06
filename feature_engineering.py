@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
 
-
 def prepare_cycle_features(cycle_lengths: list) -> pd.DataFrame:
-    """
-    From a list of past cycle lengths, create features for linear regression.
-    Features: last cycle, avg of last 3, avg of last 6, std dev, trend.
-    """
+    """Create features for linear regression from cycle lengths."""
     if len(cycle_lengths) < 2:
         return None
 
@@ -21,11 +17,8 @@ def prepare_cycle_features(cycle_lengths: list) -> pd.DataFrame:
     df = df.dropna()
     return df
 
-
-def prepare_pcos_features(user_input: dict) -> pd.DataFrame:
-    """
-    Convert user input dict into a feature vector for logistic regression.
-    """
+def prepare_health_features(user_input: dict) -> pd.DataFrame:
+    """Convert user input dict into a feature vector for dual models."""
     features = {
         "age": user_input.get("age", 25),
         "bmi": user_input.get("bmi", 22),
@@ -37,22 +30,20 @@ def prepare_pcos_features(user_input: dict) -> pd.DataFrame:
         "hair_loss": int(user_input.get("hair_loss", False)),
         "pimples": int(user_input.get("pimples", False)),
         "fast_food": int(user_input.get("fast_food", False)),
+        "pelvic_pain": int(user_input.get("pelvic_pain", False)),
+        "heavy_bleeding": int(user_input.get("heavy_bleeding", False)),
+        "pain_intercourse": int(user_input.get("pain_intercourse", False)),
+        "family_history": int(user_input.get("family_history", False)),
         "exercise": user_input.get("exercise", 3),
         "sleep_hours": user_input.get("sleep_hours", 7),
-        "stress_level": user_input.get("stress_level", 3),
     }
     return pd.DataFrame([features])
 
-
 def prepare_symptom_features(symptom_logs: list) -> pd.DataFrame:
-    """
-    Convert list of daily symptom dicts into a matrix for K-Means clustering.
-    Each row = one day's log.
-    """
+    """Convert list of daily symptom dicts into a matrix for K-Means clustering."""
     if not symptom_logs:
         return None
     df = pd.DataFrame(symptom_logs)
-    # Encode boolean/categorical fields numerically
     bool_cols = ["cramps", "bloating", "headache", "fatigue",
                  "mood_swings", "acne", "back_pain", "nausea"]
     for col in bool_cols:

@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import timedelta
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
-from feature_engineering import prepare_cycle_features
+from feature_engineering import prepare_health_features
 
 class CyclePredictor:
     def __init__(self):
@@ -22,7 +22,7 @@ class CyclePredictor:
     def train(self, dates: list):
         """Train on user's logged period dates."""
         cycle_lengths = self._get_cycle_lengths(dates)
-        df = prepare_cycle_features(cycle_lengths)
+        df = prepare_health_features(cycle_lengths)
         if df is None or len(df) < 2:
             return False
         X = df[self.feature_cols].fillna(df[self.feature_cols].mean())

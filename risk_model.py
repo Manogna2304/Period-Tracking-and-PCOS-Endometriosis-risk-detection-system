@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.calibration import CalibratedClassifierCV
@@ -10,12 +10,21 @@ class HealthRiskModel:
 
     def __init__(self):
 
-        self.pcos_model = CalibratedClassifierCV(LogisticRegression(max_iter=1000))
-        self.endo_model = CalibratedClassifierCV(LogisticRegression(max_iter=1000))
+        # Models
+        self.pcos_model = CalibratedClassifierCV(
+            LogisticRegression(max_iter=2000),
+            method="sigmoid"
+        )
+        self.endo_model = CalibratedClassifierCV(
+            LogisticRegression(max_iter=2000),
+            method="sigmoid"
+        )
 
+        # Scalers
         self.pcos_scaler = StandardScaler()
         self.endo_scaler = StandardScaler()
 
+        # Feature lists
         self.pcos_features = [
             "age", "bmi", "cycle_length", "cycle_irregular",
             "weight_gain", "hair_growth", "skin_darkening",
@@ -33,47 +42,70 @@ class HealthRiskModel:
 
         self._train_models()
 
+    # ================= CLEANING =================
+    def _clean_df(self, df):
+        df.columns = df.columns.str.strip()
+        df = df.replace({"Y": 1, "N": 0, "Yes": 1, "No": 0})
+        df = df.fillna(0)
+        return df
+
+    # ================= TRAINING =================
     def _train_models(self):
 
-        np.random.seed(42)
+        # -------- PCOS (USE BOTH DATASETS) --------
+        df1 = self._clean_df(pd.read_csv("data/pcos.csv"))
+        df2 = self._clean_df(pd.read_csv("data/PCOS_data_without_infertility.csv"))
 
-        # PCOS
+        df = pd.concat([df1, df2], ignore_index=True)
+
+        # Convert cycle type
+        df["cycle_irregular"] = df["Cycle(R/I)"].apply(
+            lambda x: 1 if str(x).strip() == "I" else 0
+        )
+
         X_pcos = pd.DataFrame({
-            "cycle_irregular": np.random.binomial(1, 0.4, 500),
-            "weight_gain": np.random.binomial(1, 0.5, 500),
-            "hair_growth": np.random.binomial(1, 0.4, 500),
-            "pimples": np.random.binomial(1, 0.5, 500),
-            "skin_darkening": np.random.binomial(1, 0.3, 500),
-            "hair_loss": np.random.binomial(1, 0.3, 500),
-            "fast_food": np.random.binomial(1, 0.5, 500),
-            "exercise": np.random.randint(0, 7, 500),
-            "sleep_hours": np.random.randint(4, 9, 500),
-            "cycle_length": np.random.randint(24, 40, 500),
-            "age": np.random.randint(16, 40, 500),
-            "bmi": np.random.normal(25, 4, 500),
+            "age": df["Age (yrs)"],
+            "bmi": df["BMI"],
+            "cycle_length": df["Cycle length(days)"],
+            "cycle_irregular": df["cycle_irregular"],
+            "weight_gain": df["Weight gain(Y/N)"],
+            "hair_growth": df["hair growth(Y/N)"],
+            "pimples": df["Pimples(Y/N)"],
+            "skin_darkening": df["Skin darkening (Y/N)"],
+            "hair_loss": df["Hair loss(Y/N)"],
+            "fast_food": df["Fast food (Y/N)"],
+            "exercise": df["Reg.Exercise(Y/N)"],
+            "sleep_hours": 7
         })
 
+        # Derived
         X_pcos["cycle_variability"] = abs(X_pcos["cycle_length"] - 28)
-        X_pcos["hormonal_score"] = X_pcos["hair_growth"] + X_pcos["pimples"]
+        X_pcos["hormonal_score"] = (
+            X_pcos["hair_growth"] +
+            X_pcos["pimples"] +
+            X_pcos["hair_loss"] +
+            X_pcos["skin_darkening"]
+        )
         X_pcos["lifestyle_risk"] = X_pcos["fast_food"]
 
-        y_pcos = (X_pcos["hormonal_score"] + X_pcos["cycle_irregular"] > 2).astype(int)
+        y_pcos = df["PCOS (Y/N)"]
 
-        X_pcos = X_pcos[self.pcos_features]
+        X_scaled = self.pcos_scaler.fit_transform(X_pcos[self.pcos_features])
+        self.pcos_model.fit(X_scaled, y_pcos)
 
-        self.pcos_model.fit(self.pcos_scaler.fit_transform(X_pcos), y_pcos)
+        # -------- ENDOMETRIOSIS --------
+        df_endo = self._clean_df(pd.read_csv("data/endo.csv"))
 
-        # Endo
         X_endo = pd.DataFrame({
-            "pelvic_pain": np.random.binomial(1, 0.5, 500),
-            "heavy_bleeding": np.random.binomial(1, 0.4, 500),
-            "pain_intercourse": np.random.binomial(1, 0.3, 500),
-            "cycle_irregular": np.random.binomial(1, 0.3, 500),
-            "exercise": np.random.randint(0, 7, 500),
-            "age": np.random.randint(16, 40, 500),
-            "bmi": np.random.normal(24, 4, 500),
-            "cycle_length": np.random.randint(24, 40, 500),
-            "family_history_endo": np.random.binomial(1, 0.3, 500),
+            "age": df_endo["age"],
+            "bmi": df_endo["bmi"],
+            "cycle_length": df_endo["cycle_length"],
+            "cycle_irregular": df_endo["irregular_cycles"],
+            "pelvic_pain": df_endo["pelvic_pain"],
+            "heavy_bleeding": df_endo["heavy_bleeding"],
+            "pain_intercourse": df_endo["pain_during_intercourse"],
+            "family_history_endo": df_endo["family_history"],
+            "exercise": df_endo["exercise_level"]
         })
 
         X_endo["pain_score"] = (
@@ -82,34 +114,44 @@ class HealthRiskModel:
             X_endo["heavy_bleeding"]
         )
 
-        y_endo = (X_endo["pain_score"] > 1).astype(int)
+        y_endo = df_endo["endometriosis"]
 
-        X_endo = X_endo[self.endo_features]
+        X_scaled = self.endo_scaler.fit_transform(X_endo[self.endo_features])
+        self.endo_model.fit(X_scaled, y_endo)
 
-        self.endo_model.fit(self.endo_scaler.fit_transform(X_endo), y_endo)
-
-    def predict_risk(self, user_input: dict):
+    # ================= PREDICTION =================
+    def predict_risk(self, user_input):
 
         X = prepare_health_features(user_input)
 
-        pcos = self.pcos_model.predict_proba(
+        # PCOS
+        pcos_prob = self.pcos_model.predict_proba(
             self.pcos_scaler.transform(X[self.pcos_features])
         )[0][1]
 
-        endo = self.endo_model.predict_proba(
+        # Endo
+        endo_prob = self.endo_model.predict_proba(
             self.endo_scaler.transform(X[self.endo_features])
         )[0][1]
 
-        def format(p):
+        # Slight adjustment (keeps realism)
+        f = X.iloc[0]
+        pcos_prob += 0.01 * f["hormonal_score"]
+        endo_prob += 0.015 * f["pain_score"]
+
+        pcos_prob = min(max(pcos_prob, 0.05), 0.95)
+        endo_prob = min(max(endo_prob, 0.05), 0.95)
+
+        def format_output(p):
             pct = round(p * 100, 1)
             if pct < 35:
-                return {"probability": pct, "risk_level": "Low", "advice": "Low risk"}
+                return {"probability": pct, "risk_level": "Low", "advice": "Maintain healthy lifestyle"}
             elif pct < 65:
                 return {"probability": pct, "risk_level": "Moderate", "advice": "Monitor symptoms"}
             else:
-                return {"probability": pct, "risk_level": "High", "advice": "Consult doctor"}
+                return {"probability": pct, "risk_level": "High", "advice": "Consult a doctor"}
 
         return {
-            "PCOS": format(pcos),
-            "Endometriosis": format(endo)
+            "PCOS": format_output(pcos_prob),
+            "Endometriosis": format_output(endo_prob)
         }

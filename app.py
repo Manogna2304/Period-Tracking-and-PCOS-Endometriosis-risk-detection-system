@@ -39,7 +39,7 @@ html, body, [class*="css"] {
     background: linear-gradient(180deg, #3d1a47 0%, #6b2d6b 100%);
     border-right: none;
 }
-[data-testid="stSidebar"] * { color: #f8e8ff !important; }
+[data-testid="stSidebar"] * { color: #d1a3ff !important; }
 [data-testid="stSidebar"] .stRadio label { color: #f8e8ff !important; font-size: 1rem; }
 
 /* Headers */

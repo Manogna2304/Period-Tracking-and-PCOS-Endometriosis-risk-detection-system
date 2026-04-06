@@ -27,6 +27,7 @@ st.markdown("""
 
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
+    color: #3d1a47;
 }
 
 /* Background */
@@ -47,6 +48,11 @@ h1 { font-family: 'DM Serif Display', serif !important; color: #3d1a47 !importan
 h2 { font-family: 'DM Serif Display', serif !important; color: #6b2d6b !important; }
 h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !important; }
 
+/* Global text color */
+p, span, div, label, li, td, th {
+    color: #3d1a47;
+}
+
 /* Cards */
 .luna-card {
     background: rgba(255,255,255,0.75);
@@ -56,6 +62,10 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     margin: 0.75rem 0;
     border: 1px solid rgba(180,100,200,0.15);
     box-shadow: 0 4px 24px rgba(109,45,107,0.08);
+}
+.luna-card p, .luna-card span, .luna-card div,
+.luna-card td, .luna-card th, .luna-card li {
+    color: #3d1a47 !important;
 }
 
 /* Metric cards */
@@ -67,13 +77,13 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     text-align: center;
     box-shadow: 0 6px 20px rgba(123,31,162,0.3);
 }
-.metric-card .value { font-size: 2.4rem; font-weight: 700; font-family: 'DM Serif Display', serif; }
-.metric-card .label { font-size: 0.85rem; opacity: 0.85; letter-spacing: 0.05em; text-transform: uppercase; }
+.metric-card .value { font-size: 2.4rem; font-weight: 700; font-family: 'DM Serif Display', serif; color: white !important; }
+.metric-card .label { font-size: 0.85rem; opacity: 0.85; letter-spacing: 0.05em; text-transform: uppercase; color: white !important; }
 
 /* Risk badge */
-.risk-low    { background: #e8f5e9; color: #2e7d32; border: 2px solid #66bb6a; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
-.risk-moderate { background: #fff8e1; color: #e65100; border: 2px solid #ffa726; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
-.risk-high   { background: #ffebee; color: #b71c1c; border: 2px solid #ef5350; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
+.risk-low    { background: #e8f5e9; color: #2e7d32 !important; border: 2px solid #66bb6a; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
+.risk-moderate { background: #fff8e1; color: #e65100 !important; border: 2px solid #ffa726; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
+.risk-high   { background: #ffebee; color: #b71c1c !important; border: 2px solid #ef5350; border-radius: 12px; padding: 0.5rem 1.2rem; font-weight: 600; display: inline-block; }
 
 /* Cluster pill */
 .cluster-pill {
@@ -82,36 +92,72 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     padding: 0.35rem 1rem;
     font-size: 0.9rem;
     font-weight: 600;
-    color: white;
+    color: white !important;
     margin: 0.2rem;
 }
 
 /* Table text visibility */
-.luna-card table td, .luna-card table th {
+.luna-card table td, .luna-card table th,
+.stMarkdown table td, .stMarkdown table th {
     color: #3d1a47 !important;
     font-weight: 500;
 }
 
 /* Checkbox and widget labels */
-.stCheckbox label, 
-[data-testid="stCheckbox"] label p {
+.stCheckbox label,
+[data-testid="stCheckbox"] label p,
+.stCheckbox span {
     color: #3d1a47 !important;
     font-weight: 500 !important;
 }
 
 /* Slider labels */
-.stSlider label, 
-[data-testid="stSlider"] label {
+.stSlider label,
+[data-testid="stSlider"] label,
+.stSlider p {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Select slider */
+.stSelectSlider label,
+.stSelectSlider p {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Number input labels */
+.stNumberInput label,
+.stNumberInput p {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Text input labels */
+.stTextInput label,
+.stTextInput p {
+    color: #3d1a47 !important;
+    font-weight: 500 !important;
+}
+
+/* Date input labels */
+.stDateInput label,
+.stDateInput p {
     color: #3d1a47 !important;
     font-weight: 500 !important;
 }
 
 /* General form label visibility */
 [data-testid="stWidgetLabel"] p,
-.stSelectSlider label,
+[data-testid="stWidgetLabel"] span,
 label[data-testid] {
     color: #3d1a47 !important;
     font-weight: 500 !important;
+}
+
+/* Caption text */
+.stCaption, .stCaption p {
+    color: #6b2d6b !important;
 }
 
 /* Subtitle / italic markdown text */
@@ -121,7 +167,27 @@ p em, .stMarkdown p em {
     font-weight: 400;
 }
 
+/* Markdown general text */
+.stMarkdown p, .stMarkdown li, .stMarkdown span {
+    color: #3d1a47 !important;
+}
 
+/* Markdown bold */
+.stMarkdown strong {
+    color: #3d1a47 !important;
+}
+
+/* Markdown code */
+.stMarkdown code {
+    color: #7b1fa2 !important;
+    background: rgba(123,31,162,0.08) !important;
+}
+
+/* Blockquote */
+.stMarkdown blockquote {
+    border-left: 4px solid #c2185b;
+    color: #6b2d6b !important;
+}
 
 /* Buttons */
 .stButton > button {
@@ -142,6 +208,11 @@ p em, .stMarkdown p em {
 /* Input fields */
 .stNumberInput input, .stSelectbox select, .stSlider {
     border-radius: 10px !important;
+}
+
+/* Success / info / warning boxes text */
+.stAlert p, .stAlert div, .stAlert span {
+    color: inherit !important;
 }
 
 /* Divider */
@@ -172,6 +243,11 @@ if "clusterer" not in st.session_state:
     c.fit()
     st.session_state.clusterer = c
 
+# Shared Plotly layout defaults
+PLOTLY_BASE = dict(
+    paper_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="DM Sans", color="#3d1a47"),
+)
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -279,7 +355,6 @@ if page == "🏠 Home":
         with st.container():
             st.markdown('<div class="luna-card">', unsafe_allow_html=True)
 
-            # Show next 3 months as a visual timeline
             today = date.today()
             last = st.session_state.last_period_date
             avg_len = int(result["avg_cycle"])
@@ -307,38 +382,51 @@ if page == "🏠 Home":
                 ))
 
             # Today marker
-            fig.add_vline(x=0, line_color="#7b1fa2", line_dash="dot", annotation_text="Today")
+            fig.add_vline(x=0, line_color="#7b1fa2", line_dash="dot", annotation_text="Today",
+                          annotation_font_color="#3d1a47")
 
             fig.update_layout(
-    height=260,
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    showlegend=True,
-    legend=dict(
-        orientation="h",
-        y=-0.2,
-        font=dict(color="#3d1a47", family="DM Sans")
-    ),
-    margin=dict(l=10, r=10, t=10, b=10),
-    barmode="overlay",
-    xaxis=dict(visible=False),
-    yaxis=dict(
-        tickfont=dict(color="#3d1a47", family="DM Sans"),
-        gridcolor="rgba(180,100,200,0.1)",
-    ),
-    font=dict(family="DM Sans", color="#3d1a47"),
-)
-            
+                height=260,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                showlegend=True,
+                legend=dict(
+                    orientation="h",
+                    y=-0.2,
+                    font=dict(color="#3d1a47", family="DM Sans"),
+                ),
+                margin=dict(l=10, r=10, t=10, b=10),
+                barmode="overlay",
+                xaxis=dict(visible=False),
+                yaxis=dict(
+                    tickfont=dict(color="#3d1a47", family="DM Sans"),
+                    gridcolor="rgba(180,100,200,0.1)",
+                ),
+                font=dict(family="DM Sans", color="#3d1a47"),
+            )
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f"""
-<table style="width:100%; color:#3d1a47; font-size:0.95rem;">
-  <tr><td>🔴 <b>Last period started</b></td><td style="color:#6b2d6b; font-weight:600;">{st.session_state.last_period_date.strftime('%d %b %Y')}</td></tr>
-  <tr><td>🔮 <b>Next period predicted</b></td><td style="color:#6b2d6b; font-weight:600;">{next_period.strftime('%d %b %Y')}</td></tr>
-  <tr><td>📏 <b>Predicted cycle length</b></td><td style="color:#6b2d6b; font-weight:600;">{pred_len} days</td></tr>
-  <tr><td>📊 <b>Confidence</b></td><td style="color:#6b2d6b; font-weight:600;">{result['confidence'].capitalize()}</td></tr>
+<table style="width:100%; color:#3d1a47; font-size:0.95rem; border-collapse:collapse;">
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.2);">
+    <td style="padding:0.4rem 0; color:#3d1a47;">🔴 <b>Last period started</b></td>
+    <td style="color:#6b2d6b; font-weight:600;">{st.session_state.last_period_date.strftime('%d %b %Y')}</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.2);">
+    <td style="padding:0.4rem 0; color:#3d1a47;">🔮 <b>Next period predicted</b></td>
+    <td style="color:#6b2d6b; font-weight:600;">{next_period.strftime('%d %b %Y')}</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.2);">
+    <td style="padding:0.4rem 0; color:#3d1a47;">📏 <b>Predicted cycle length</b></td>
+    <td style="color:#6b2d6b; font-weight:600;">{pred_len} days</td>
+  </tr>
+  <tr>
+    <td style="padding:0.4rem 0; color:#3d1a47;">📊 <b>Confidence</b></td>
+    <td style="color:#6b2d6b; font-weight:600;">{result['confidence'].capitalize()}</td>
+  </tr>
 </table>
 """, unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -427,7 +515,8 @@ The model self-trains on your own cycle history, improving predictions as you lo
                 marker=dict(size=8, color="#c2185b"),
             ))
             fig.add_hline(y=result["avg_cycle"], line_dash="dash", line_color="#7b1fa2",
-                          annotation_text=f"Avg: {result['avg_cycle']}d")
+                          annotation_text=f"Avg: {result['avg_cycle']}d",
+                          annotation_font_color="#3d1a47")
             fig.add_trace(go.Scatter(
                 x=[len(cycles) + 1], y=[result["predicted_length"]],
                 mode="markers",
@@ -435,15 +524,16 @@ The model self-trains on your own cycle history, improving predictions as you lo
                 marker=dict(size=14, color="#ff6090", symbol="star"),
             ))
             fig.update_layout(
-                title="Cycle Length History + Prediction",
+                title=dict(text="Cycle Length History + Prediction", font=dict(color="#3d1a47")),
                 xaxis_title="Cycle #",
                 yaxis_title="Length (days)",
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(255,255,255,0.5)",
-                font=dict(family="DM Sans"),
+                font=dict(family="DM Sans", color="#3d1a47"),
                 height=300,
-                legend=dict(orientation="h", y=-0.3),
-                yaxis=dict(range=[15, 50]),
+                legend=dict(orientation="h", y=-0.3, font=dict(color="#3d1a47")),
+                yaxis=dict(range=[15, 50], tickfont=dict(color="#3d1a47"), title_font=dict(color="#3d1a47")),
+                xaxis=dict(tickfont=dict(color="#3d1a47"), title_font=dict(color="#3d1a47")),
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -454,17 +544,37 @@ The model self-trains on your own cycle history, improving predictions as you lo
 
         st.markdown('<div class="luna-card">', unsafe_allow_html=True)
         st.markdown(f"""
-**📊 Cycle Stats**
-
-| Metric | Value |
-|---|---|
-| Average cycle | {result['avg_cycle']} days |
-| Std deviation | {result['std_dev']} days |
-| Regularity | {'Regular ✅' if result['std_dev'] < 4 else 'Slightly Irregular ⚠️' if result['std_dev'] < 7 else 'Irregular ❗'} |
-| Predicted ovulation | ~{next_date - timedelta(days=14) if days_until >= 0 else 'Past cycle'} |
-| Fertile window (est.) | {fertile_start.strftime('%d %b')} – {fertile_end.strftime('%d %b')} |
-| Model confidence | **{result['confidence'].capitalize()}** ({len(cycles)} cycles logged) |
-        """)
+<table style="width:100%; color:#3d1a47; font-size:0.95rem; border-collapse:collapse;">
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.2);">
+    <th style="text-align:left; padding:0.4rem 0; color:#3d1a47;">📊 Cycle Stats</th>
+    <th style="color:#3d1a47;"></th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">Average cycle</td>
+    <td style="color:#6b2d6b; font-weight:600;">{result['avg_cycle']} days</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">Std deviation</td>
+    <td style="color:#6b2d6b; font-weight:600;">{result['std_dev']} days</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">Regularity</td>
+    <td style="color:#6b2d6b; font-weight:600;">{'Regular ✅' if result['std_dev'] < 4 else 'Slightly Irregular ⚠️' if result['std_dev'] < 7 else 'Irregular ❗'}</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">Predicted ovulation</td>
+    <td style="color:#6b2d6b; font-weight:600;">~{next_date - timedelta(days=14) if days_until >= 0 else 'Past cycle'}</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">Fertile window (est.)</td>
+    <td style="color:#6b2d6b; font-weight:600;">{fertile_start.strftime('%d %b')} – {fertile_end.strftime('%d %b')}</td>
+  </tr>
+  <tr>
+    <td style="padding:0.35rem 0; color:#3d1a47;">Model confidence</td>
+    <td style="color:#6b2d6b; font-weight:600;"><b>{result['confidence'].capitalize()}</b> ({len(cycles)} cycles logged)</td>
+  </tr>
+</table>
+        """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -531,9 +641,9 @@ elif page == "🔬 Health Risk Check":
             fig = go.Figure(go.Indicator(
                 mode="gauge+number",
                 value=result["probability"],
-                number={"suffix": "%", "font": {"size": 40, "family": "DM Serif Display"}},
+                number={"suffix": "%", "font": {"size": 40, "family": "DM Serif Display", "color": "#3d1a47"}},
                 gauge={
-                    "axis": {"range": [0, 100], "tickfont": {"size": 12}},
+                    "axis": {"range": [0, 100], "tickfont": {"size": 12, "color": "#3d1a47"}},
                     "bar": {"color": result["color"]},
                     "steps": [
                         {"range": [0, 35], "color": "#e8f5e9"},
@@ -542,10 +652,13 @@ elif page == "🔬 Health Risk Check":
                     ],
                     "threshold": {"line": {"color": "#3d1a47", "width": 3}, "value": result["probability"]},
                 },
-                title={"text": "PCOS Risk Score", "font": {"family": "DM Serif Display", "size": 18}},
+                title={"text": "PCOS Risk Score", "font": {"family": "DM Serif Display", "size": 18, "color": "#3d1a47"}},
             ))
-            fig.update_layout(height=280, paper_bgcolor="rgba(0,0,0,0)",
-                              font=dict(family="DM Sans"))
+            fig.update_layout(
+                height=280,
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="DM Sans", color="#3d1a47"),
+            )
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown('<div class="luna-card">', unsafe_allow_html=True)
@@ -635,13 +748,19 @@ elif page == "🌸 Symptom Patterns":
                 labels={"x": "Component 1", "y": "Component 2", "cluster_name": "Day Type"},
             )
             fig.update_traces(marker=dict(size=14), textposition="top center",
-                              textfont=dict(size=10))
+                              textfont=dict(size=10, color="#3d1a47"))
             fig.update_layout(
                 height=380,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(255,255,255,0.4)",
-                font=dict(family="DM Sans"),
-                legend=dict(orientation="h", y=-0.2),
+                font=dict(family="DM Sans", color="#3d1a47"),
+                legend=dict(
+                    orientation="h",
+                    y=-0.2,
+                    font=dict(color="#3d1a47"),
+                ),
+                xaxis=dict(tickfont=dict(color="#3d1a47"), title_font=dict(color="#3d1a47")),
+                yaxis=dict(tickfont=dict(color="#3d1a47"), title_font=dict(color="#3d1a47")),
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -657,7 +776,7 @@ elif page == "🌸 Symptom Patterns":
                     st.markdown(f"""
 <div style="margin: 0.5rem 0;">
   <span class="cluster-pill" style="background:{profile['color']}">{profile['emoji']} {name}</span>
-  <span style="font-size:0.9rem; color:#555;"> {count} day(s) · {pct}%</span>
+  <span style="font-size:0.9rem; color:#3d1a47;"> {count} day(s) · {pct}%</span>
   <div style="background:#eee; border-radius:50px; height:6px; margin-top:4px;">
     <div style="width:{pct}%; background:{profile['color']}; height:6px; border-radius:50px;"></div>
   </div>
@@ -684,7 +803,7 @@ elif page == "🌸 Symptom Patterns":
 <div style="text-align:center; padding:0.5rem; background:{profile['color']}22; border-radius:12px; border: 2px solid {profile['color']};">
   <div style="font-size:1.5rem">{profile['emoji']}</div>
   <div style="font-size:0.75rem; font-weight:600; color:{profile['color']}">Day {day_info['day']}</div>
-  <div style="font-size:0.65rem; color:#555">{profile['name'].split()[0]}</div>
+  <div style="font-size:0.65rem; color:#3d1a47">{profile['name'].split()[0]}</div>
 </div>""", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -693,14 +812,32 @@ elif page == "🌸 Symptom Patterns":
         st.markdown('<div class="luna-card">', unsafe_allow_html=True)
         st.markdown("""
 **K-Means Clustering** groups your daily symptom logs into 4 natural clusters:
-
-| Cluster | Characteristics |
-|---|---|
-| 🔴 High Pain | Cramps, back pain, low energy, heavy flow |
-| 🟡 Hormonal | Mood swings, acne, fatigue |
-| 🟢 Energetic | Minimal symptoms, high energy & mood |
-| 🟠 Bloating | Bloating, nausea, mild discomfort |
-
+        """)
+        st.markdown(f"""
+<table style="width:100%; color:#3d1a47; font-size:0.95rem; border-collapse:collapse;">
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.2);">
+    <th style="text-align:left; padding:0.4rem 0; color:#3d1a47;">Cluster</th>
+    <th style="text-align:left; padding:0.4rem 0; color:#3d1a47;">Characteristics</th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">🔴 High Pain</td>
+    <td style="color:#6b2d6b;">Cramps, back pain, low energy, heavy flow</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">🟡 Hormonal</td>
+    <td style="color:#6b2d6b;">Mood swings, acne, fatigue</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(180,100,200,0.15);">
+    <td style="padding:0.35rem 0; color:#3d1a47;">🟢 Energetic</td>
+    <td style="color:#6b2d6b;">Minimal symptoms, high energy & mood</td>
+  </tr>
+  <tr>
+    <td style="padding:0.35rem 0; color:#3d1a47;">🟠 Bloating</td>
+    <td style="color:#6b2d6b;">Bloating, nausea, mild discomfort</td>
+  </tr>
+</table>
+        """, unsafe_allow_html=True)
+        st.markdown("""
 PCA (Principal Component Analysis) is used to project the high-dimensional symptom space into 2D for visualization.
         """)
         st.markdown('</div>', unsafe_allow_html=True)

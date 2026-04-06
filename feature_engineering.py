@@ -57,6 +57,10 @@ def prepare_health_features(user_input: dict) -> pd.DataFrame:
         "family_history_endo": family_history_endo,   # used by Endo model
         "exercise": user_input.get("exercise", 3),
         "sleep_hours": user_input.get("sleep_hours", 7),
+        "cycle_variability": abs(user_input.get("cycle_length", 28) - 28),
+        "hormonal_score": ( int(user_input.get("hair_growth", False)) + int(user_input.get("acne", False)) +  int(user_input.get("hair_loss", False)) + int(user_input.get("skin_darkening", False))),
+        "pain_score": (int(user_input.get("pelvic_pain", False)) +int(user_input.get("pain_intercourse", False)) +int(user_input.get("heavy_bleeding", False))),
+        "lifestyle_risk": (int(user_input.get("fast_food", False)) +    (1 if user_input.get("exercise", 3) < 2 else 0) +    (1 if user_input.get("sleep_hours", 7) < 6 else 0))
     }
     return pd.DataFrame([features])
 

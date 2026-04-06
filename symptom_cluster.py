@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from feature_engineering import prepare_symptom_features
+from feature_engineering import prepare_health_features
 
 CLUSTER_PROFILES = {
     0: {"name": "High Pain Days", "emoji": "🤒", "description": "Intense cramps, back pain, and low energy.", "tip": "Rest, use a heating pad.", "color": "#e74c3c"},
@@ -37,7 +37,7 @@ class SymptomClusterer:
     def fit(self, symptom_logs: list = None):
         base_df = self._generate_synthetic_base()
         if symptom_logs and len(symptom_logs) >= 5:
-            user_df = prepare_symptom_features(symptom_logs)
+            user_df = prepare_health_features(symptom_logs)
             df = pd.concat([base_df, user_df.reindex(columns=self.feature_cols, fill_value=0)], ignore_index=True) if user_df is not None else base_df
         else:
             df = base_df
@@ -59,7 +59,7 @@ class SymptomClusterer:
         if not symptom_logs or len(symptom_logs) < 3: return None
         if not self.is_trained: self.fit(symptom_logs)
 
-        df = prepare_symptom_features(symptom_logs).reindex(columns=self.feature_cols, fill_value=0)
+        df = prepare_health_features(symptom_logs).reindex(columns=self.feature_cols, fill_value=0)
         X_scaled = self.scaler.transform(df)
         labels = self.model.predict(X_scaled)
         coords = self.pca.transform(X_scaled)

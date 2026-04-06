@@ -322,15 +322,14 @@ if page == "🏠 Home":
             )
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f"""
-            | | |
-            |---|---|
-            | 🔴 **Last period started** | {st.session_state.last_period_date.strftime('%d %b %Y')} |
-            | 🔮 **Next period predicted** | {next_period.strftime('%d %b %Y')} |
-            | 📏 **Predicted cycle length** | {pred_len} days |
-            | 📊 **Confidence** | {result['confidence'].capitalize()} |
-            """)
-            st.markdown('</div>', unsafe_allow_html=True)
+           st.markdown(f"""
+<table style="width:100%; color:#3d1a47; font-size:0.95rem;">
+  <tr><td>🔴 <b>Last period started</b></td><td style="color:#6b2d6b; font-weight:600;">{st.session_state.last_period_date.strftime('%d %b %Y')}</td></tr>
+  <tr><td>🔮 <b>Next period predicted</b></td><td style="color:#6b2d6b; font-weight:600;">{next_period.strftime('%d %b %Y')}</td></tr>
+  <tr><td>📏 <b>Predicted cycle length</b></td><td style="color:#6b2d6b; font-weight:600;">{pred_len} days</td></tr>
+  <tr><td>📊 <b>Confidence</b></td><td style="color:#6b2d6b; font-weight:600;">{result['confidence'].capitalize()}</td></tr>
+</table>
+""", unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════

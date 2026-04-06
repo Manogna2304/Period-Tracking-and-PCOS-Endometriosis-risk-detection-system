@@ -1,16 +1,13 @@
 import pandas as pd
-import numpy as np
+
+def compute_bmi(weight, height):
+    return round(weight / ((height / 100) ** 2), 1)
 
 
-def compute_bmi(weight_kg: float, height_cm: float) -> float:
-    if height_cm <= 0:
-        return 22.0
-    return round(weight_kg / ((height_cm / 100) ** 2), 1)
+def prepare_health_features(user_input):
 
-
-def prepare_health_features(user_input: dict) -> pd.DataFrame:
-
-    bmi = compute_bmi(user_input.get("weight_kg", 60), user_input.get("height_cm", 160))
+    bmi = compute_bmi(user_input.get("weight_kg", 60),
+                      user_input.get("height_cm", 160))
 
     df = pd.DataFrame([{
         "age": user_input.get("age", 25),
@@ -34,7 +31,6 @@ def prepare_health_features(user_input: dict) -> pd.DataFrame:
         "sleep_hours": user_input.get("sleep_hours", 7),
     }])
 
-    # Derived features
     df["cycle_variability"] = abs(df["cycle_length"] - 28)
 
     df["hormonal_score"] = (

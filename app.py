@@ -97,6 +97,23 @@ h3 { font-family: 'DM Serif Display', serif !important; color: #8e3a9d !importan
     padding: 0.6rem 2rem !important; transition: all 0.2s ease !important;
 }
 
+/* Subtitles, captions, and small text */
+p { color: #3d1a47 !important; }
+em, i { color: #6b2d6b !important; }
+small { color: #6b2d6b !important; }
+.stMarkdown p { color: #3d1a47 !important; }
+.stMarkdown em { color: #6b2d6b !important; }
+[data-testid="stCaptionContainer"] p,
+[data-testid="stCaptionContainer"],
+.stCaption, .stCaption p { color: #8e3a9d !important; font-size: 0.85rem; }
+[data-testid="stText"] { color: #3d1a47 !important; }
+label, .stSelectSlider label, .stSlider label,
+.stNumberInput label, .stCheckbox label,
+.stRadio label, .stSelectbox label { color: #3d1a47 !important; }
+[data-testid="stWidgetLabel"] p { color: #3d1a47 !important; }
+.stInfo, [data-testid="stNotification"] p { color: #3d1a47 !important; }
+[data-testid="stDataFrameResizable"] * { color: #3d1a47 !important; }
+
 /* Hide streamlit branding and white header bars */
 #MainMenu, footer { visibility: hidden; }
 header { visibility: hidden !important; display: none !important; }

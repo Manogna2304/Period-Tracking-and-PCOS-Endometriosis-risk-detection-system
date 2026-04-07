@@ -52,10 +52,9 @@ class HealthRiskModel:
     # ================= TRAINING =================
     def _train_models(self):
 
-        # -------- PCOS (USE BOTH DATASETS) --------
+        # -------- PCOS --------
         df1 = self._clean_df(pd.read_csv("data/pcos.csv"))
         df2 = self._clean_df(pd.read_csv("data/PCOS_data_without_infertility.csv"))
-
         df = pd.concat([df1, df2], ignore_index=True)
 
         # Convert cycle type
@@ -78,7 +77,7 @@ class HealthRiskModel:
             "sleep_hours": 7
         })
 
-        # Derived
+        # Derived features
         X_pcos["cycle_variability"] = abs(X_pcos["cycle_length"] - 28)
         X_pcos["hormonal_score"] = (
             X_pcos["hair_growth"] +
@@ -87,16 +86,18 @@ class HealthRiskModel:
             X_pcos["skin_darkening"]
         )
         X_pcos["lifestyle_risk"] = X_pcos["fast_food"]
-        # 🔥 FORCE NUMERIC (CRITICAL FIX)
-X_pcos = X_pcos.apply(pd.to_numeric, errors="coerce")
 
-# Replace any remaining NaNs
-X_pcos = X_pcos.fillna(0)
+        # Ensure correct feature set
+        X_pcos = X_pcos[self.pcos_features]
+
+        # Fix data types
+        X_pcos = X_pcos.apply(pd.to_numeric, errors="coerce")
+        X_pcos = X_pcos.fillna(0)
 
         y_pcos = df["PCOS (Y/N)"]
 
-        X_scaled = self.pcos_scaler.fit_transform(X_pcos[self.pcos_features])
-        self.pcos_model.fit(X_scaled, y_pcos)
+        X_scaled_pcos = self.pcos_scaler.fit_transform(X_pcos)
+        self.pcos_model.fit(X_scaled_pcos, y_pcos)
 
         # -------- ENDOMETRIOSIS --------
         df_endo = self._clean_df(pd.read_csv("data/endo.csv"))
@@ -120,20 +121,15 @@ X_pcos = X_pcos.fillna(0)
         )
 
         X_endo = X_endo[self.endo_features]
-X_endo = X_endo.apply(pd.to_numeric, errors="coerce")
-X_endo = X_endo.fillna(0)
+
+        # Fix data types
+        X_endo = X_endo.apply(pd.to_numeric, errors="coerce")
+        X_endo = X_endo.fillna(0)
 
         y_endo = df_endo["endometriosis"]
 
-       # Ensure only required columns
-X_pcos = X_pcos[self.pcos_features]
-
-# 🔥 Fix data types
-X_pcos = X_pcos.apply(pd.to_numeric, errors="coerce")
-X_pcos = X_pcos.fillna(0)
-
-X_scaled = self.pcos_scaler.fit_transform(X_pcos)
-        self.endo_model.fit(X_scaled, y_endo)
+        X_scaled_endo = self.endo_scaler.fit_transform(X_endo)
+        self.endo_model.fit(X_scaled_endo, y_endo)
 
     # ================= PREDICTION =================
     def predict_risk(self, user_input):
@@ -145,12 +141,12 @@ X_scaled = self.pcos_scaler.fit_transform(X_pcos)
             self.pcos_scaler.transform(X[self.pcos_features])
         )[0][1]
 
-        # Endo
+        # Endometriosis
         endo_prob = self.endo_model.predict_proba(
             self.endo_scaler.transform(X[self.endo_features])
         )[0][1]
 
-        # Slight adjustment (keeps realism)
+        # Adjustments
         f = X.iloc[0]
         pcos_prob += 0.01 * f["hormonal_score"]
         endo_prob += 0.015 * f["pain_score"]

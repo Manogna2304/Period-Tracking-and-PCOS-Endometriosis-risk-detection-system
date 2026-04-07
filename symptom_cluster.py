@@ -7,6 +7,15 @@ from sklearn.decomposition import PCA
 from feature_engineering import prepare_health_features
 
 
+# ✅ RESTORED (IMPORTANT)
+CLUSTER_PROFILES = {
+    0: {"name": "High Pain", "emoji": "🤕"},
+    1: {"name": "Hormonal", "emoji": "😓"},
+    2: {"name": "Normal", "emoji": "⚡"},
+    3: {"name": "Bloating", "emoji": "😮"},
+}
+
+
 FEATURE_COLS = [
     "cramps", "bloating", "headache", "fatigue",
     "mood_swings", "acne", "back_pain", "nausea",
@@ -24,7 +33,10 @@ class SymptomClusterer:
 
     def _generate_base(self):
         np.random.seed(42)
-        return pd.DataFrame(np.random.randint(0, 5, (120, len(FEATURE_COLS))), columns=FEATURE_COLS)
+        return pd.DataFrame(
+            np.random.randint(0, 5, (120, len(FEATURE_COLS))),
+            columns=FEATURE_COLS
+        )
 
     def fit(self, logs=None):
         base = self._generate_base()
@@ -55,4 +67,33 @@ class SymptomClusterer:
         X = self.scaler.transform(df)
 
         cluster = int(self.model.predict(X)[0])
-        return {"cluster_id": cluster}
+
+        profile = CLUSTER_PROFILES.get(cluster, CLUSTER_PROFILES[2])
+
+        return {
+            "cluster_id": cluster,
+            "name": profile["name"],
+            "emoji": profile["emoji"]
+        }
+
+    def get_pattern_summary(self, logs):
+        if not logs or len(logs) < 3:
+            return None
+
+        if not self.is_trained:
+            self.fit(logs)
+
+        df = prepare_health_features(logs).reindex(columns=FEATURE_COLS, fill_value=0)
+
+        X = self.scaler.transform(df)
+        labels = self.model.predict(X)
+        coords = self.pca.transform(X)
+
+        counts = Counter(labels)
+        dominant = counts.most_common(1)[0][0]
+
+        return {
+            "labels": labels.tolist(),
+            "dominant": CLUSTER_PROFILES[dominant],
+            "coords": coords.tolist(),
+        }

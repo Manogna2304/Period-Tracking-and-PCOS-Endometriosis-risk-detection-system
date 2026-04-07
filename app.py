@@ -122,7 +122,7 @@ if page == "🏠 Home":
 
         try:
             cluster = st.session_state.clusterer.predict_day(log)
-            st.success(f"Logged: Cluster {cluster['cluster_id']}")
+            st.success(f"{cluster['emoji']} {cluster['name']} day")
         except Exception as e:
             st.error(f"Clustering failed: {e}")
 

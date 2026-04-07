@@ -22,6 +22,72 @@ st.set_page_config(
     layout="wide",
 )
 
+st.markdown("""
+<style>
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif;
+    color: #3d1a47;
+}
+
+/* 🌸 Background Gradient */
+.stApp {
+    background: linear-gradient(135deg, #fdf6f0 0%, #fce4ec 50%, #f3e5f5 100%);
+}
+
+/* 🌙 Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #3d1a47 0%, #6b2d6b 100%);
+}
+[data-testid="stSidebar"] * {
+    color: #e0c3fc !important;
+}
+
+/* Headings */
+h1 {
+    font-family: 'DM Serif Display', serif;
+    color: #3d1a47;
+}
+h2, h3 {
+    font-family: 'DM Serif Display', serif;
+    color: #6b2d6b;
+}
+
+/* Metric cards look better */
+[data-testid="metric-container"] {
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+    color: #3d1a47;
+    border-radius: 10px;
+    border: 1px solid rgba(180,100,200,0.4);
+}
+
+/* Inputs */
+label, .stSlider label, .stCheckbox label {
+    color: #3d1a47 !important;
+}
+
+/* Small text */
+small, .stCaption {
+    color: #8e3a9d !important;
+}
+
+/* Remove header/footer */
+#MainMenu, footer {visibility: hidden;}
+header {visibility: hidden;}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ── SAFE INIT ───────────────────────────────────
 def init_models():
     if "predictor" not in st.session_state:

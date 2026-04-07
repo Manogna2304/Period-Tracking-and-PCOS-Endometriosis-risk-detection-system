@@ -87,6 +87,11 @@ class HealthRiskModel:
             X_pcos["skin_darkening"]
         )
         X_pcos["lifestyle_risk"] = X_pcos["fast_food"]
+        # 🔥 FORCE NUMERIC (CRITICAL FIX)
+X_pcos = X_pcos.apply(pd.to_numeric, errors="coerce")
+
+# Replace any remaining NaNs
+X_pcos = X_pcos.fillna(0)
 
         y_pcos = df["PCOS (Y/N)"]
 
@@ -114,9 +119,20 @@ class HealthRiskModel:
             X_endo["heavy_bleeding"]
         )
 
+        X_endo = X_endo[self.endo_features]
+X_endo = X_endo.apply(pd.to_numeric, errors="coerce")
+X_endo = X_endo.fillna(0)
+
         y_endo = df_endo["endometriosis"]
 
-        X_scaled = self.endo_scaler.fit_transform(X_endo[self.endo_features])
+       # Ensure only required columns
+X_pcos = X_pcos[self.pcos_features]
+
+# 🔥 Fix data types
+X_pcos = X_pcos.apply(pd.to_numeric, errors="coerce")
+X_pcos = X_pcos.fillna(0)
+
+X_scaled = self.pcos_scaler.fit_transform(X_pcos)
         self.endo_model.fit(X_scaled, y_endo)
 
     # ================= PREDICTION =================

@@ -77,15 +77,28 @@ if page == "🏠 Home":
 
     result = predictor.predict_next(dates)
 
-    next_period = result.get("next_predicted_date", get_local_date())
-    days_until = (next_period - get_local_date()).days
+   next_period = result.get("next_predicted_date")
 
+if next_period is None:
+    next_period = get_local_date()
+    days_until = 0
+else:
+    # ensure it's a date
+    if isinstance(next_period, datetime):
+        next_period = next_period.date()
+
+    days_until = (next_period - get_local_date()).days
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Avg Cycle", result.get("avg_cycle", 28))
     col2.metric("Next Cycle Length", result.get("predicted_length", 28))
-    col3.metric("Next Period", f"{days_until} days")
+    label = (
+    "Today" if days_until == 0 else
+    f"in {days_until} days" if days_until > 0 else
+    f"{abs(days_until)} days ago"
+)
 
+col3.metric("Next Period", label)
     st.markdown("---")
 
     # LOG SYMPTOMS
